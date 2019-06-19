@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
+
 import numpy as np
 import math
-from base import *
+#from base import *
 import skimage.measure
 import scipy
 import scipy.misc
 import ctypes
 import re
+import os
+
 
 ssim_dll_path = os.path.split(os.path.realpath(__file__))[0]
 ssim_dll_name = 'ssim.dll' if(os.name=='nt') else 'libssim.so'
@@ -14,10 +17,10 @@ ssim_dll_name = 'ssim.dll' if(os.name=='nt') else 'libssim.so'
 class Loader:
     
     if(os.path.exists(os.path.join(ssim_dll_path, ssim_dll_name))):
-        print_debug("load '%s'"%(os.path.join(ssim_dll_path, ssim_dll_name)), textColor='golden')
+        # print_debug("load '%s'"%(os.path.join(ssim_dll_path, ssim_dll_name)), textColor='golden')
         dll = np.ctypeslib.load_library(ssim_dll_name, ssim_dll_path)
-    else:
-        print_debug("load '%s' FAILED"%(os.path.join(ssim_dll_path, ssim_dll_name)), textColor='red')
+    #else:
+        # print_debug("load '%s' FAILED"%(os.path.join(ssim_dll_path, ssim_dll_name)), textColor='red')
 
     type_dict = {'int':ctypes.c_int, 'float':ctypes.c_float, 'double':ctypes.c_double, 'void':None,
                     'int32':ctypes.c_int32, 'uint32':ctypes.c_uint32, 'int16':ctypes.c_int16, 'uint16':ctypes.c_uint16,
@@ -48,7 +51,7 @@ class Loader:
             else:
                 arg = a_list[-3]+'*' if(a_list[-2]=='*') else a_list[-2]
             arg_types.append(arg)
-        print_debug(arg_types, textColor='magenta')
+        # print_debug(arg_types, textColor='magenta')
         #print_debug('res_type=%s, func_name=%s, arg_types=%s'%(r[0], r[1], str(arg_types)), textColor='yellow')
         return Loader.get_function(r[0], r[1], arg_types)
 
@@ -104,33 +107,33 @@ def SSIM_slow(x_image, y_image, max_value=255.0, win_size=7, use_sample_covarian
 
 if __name__ == '__main__':
 
-    T = Timer()
+    # T = Timer()
     path = os.path.join(ssim_dll_path, 'jpg')
     x = scipy.misc.imread(os.path.join(path, '0.jpg'))
     y = scipy.misc.imread(os.path.join(path, '1.jpg'))
 
     #x = x.astype('float32')/255
     #y = y.astype('float32')/255
-    print2(x.dtype)
+    # print2(x.dtype)
     max_val = 255 if(x.dtype=='uint8') else 1.0
 
-    T.begin()
-    psnr = PSNR_slow(x, y, max_val)
-    T.end("PSNR_slow")
-    print2("  psnr_slow=%f"%psnr, textColor='cyan')
+    # T.begin()
+    # psnr = PSNR_slow(x, y, max_val)
+    # T.end("PSNR_slow")
+    # print2("  psnr_slow=%f"%psnr, textColor='cyan')
 
-    T.begin()
-    p = PSNR(x, y, max_val)
-    T.end("PSNR_fast")
-    print2("  psnr_fast=%f"%p, textColor='white')
+    # T.begin()
+    # p = PSNR(x, y, max_val)
+    # T.end("PSNR_fast")
+    # print2("  psnr_fast=%f"%p, textColor='white')
 
-    T.begin()
-    ssim = SSIM_slow(x, y, max_val)
-    T.end("SSIM_slow")
-    print2("  ssim_slow=%f"%ssim, textColor='cyan')
+    # T.begin()
+    # ssim = SSIM_slow(x, y, max_val)
+    # T.end("SSIM_slow")
+    # print2("  ssim_slow=%f"%ssim, textColor='cyan')
 
-    T.begin()
+    # T.begin()
     p = SSIM(x, y, max_val)
-    T.end("SSIM_fast")
-    print2("  ssim_fast=%f"%p, textColor='white')
+    # T.end("SSIM_fast")
+    print("  ssim_fast=%f"%p)
 
